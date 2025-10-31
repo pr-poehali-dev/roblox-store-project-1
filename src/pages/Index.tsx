@@ -175,9 +175,7 @@ export default function Index() {
               <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
                 <Icon name="GamepadIcon" size={24} />
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
-                ROBLOX SHOP
-              </h1>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">Murder Mystery 2</h1>
             </div>
             <nav className="hidden md:flex gap-6">
               {['Каталог', 'Предметы', 'Robux', 'Оплата и доставка', 'Отзывы', 'FAQ', 'Контакты'].map((item) => {
