@@ -69,6 +69,72 @@ const accounts = [
   }
 ];
 
+const items = [
+  {
+    id: 1,
+    title: 'Неоновый меч',
+    category: 'Оружие',
+    rarity: 'Легендарное',
+    price: 499,
+    image: 'https://cdn.poehali.dev/projects/159c6133-3445-43e3-aeff-1bc353f2a632/files/d7678790-f869-49f3-a1e6-02fc4fbccd66.jpg',
+    badge: 'Топ'
+  },
+  {
+    id: 2,
+    title: 'Космический костюм',
+    category: 'Одежда',
+    rarity: 'Эпическое',
+    price: 349,
+    image: 'https://cdn.poehali.dev/projects/159c6133-3445-43e3-aeff-1bc353f2a632/files/29f4c6f1-3865-4a97-a9b3-7875ce059ce7.jpg',
+    badge: 'Новинка'
+  },
+  {
+    id: 3,
+    title: 'Огненный щит',
+    category: 'Оружие',
+    rarity: 'Редкое',
+    price: 299,
+    image: 'https://cdn.poehali.dev/projects/159c6133-3445-43e3-aeff-1bc353f2a632/files/d7678790-f869-49f3-a1e6-02fc4fbccd66.jpg',
+    badge: ''
+  },
+  {
+    id: 4,
+    title: 'VIP наряд',
+    category: 'Одежда',
+    rarity: 'Легендарное',
+    price: 599,
+    image: 'https://cdn.poehali.dev/projects/159c6133-3445-43e3-aeff-1bc353f2a632/files/29f4c6f1-3865-4a97-a9b3-7875ce059ce7.jpg',
+    badge: 'VIP'
+  },
+  {
+    id: 5,
+    title: 'Ледяной посох',
+    category: 'Оружие',
+    rarity: 'Эпическое',
+    price: 449,
+    image: 'https://cdn.poehali.dev/projects/159c6133-3445-43e3-aeff-1bc353f2a632/files/d7678790-f869-49f3-a1e6-02fc4fbccd66.jpg',
+    badge: 'Хит'
+  },
+  {
+    id: 6,
+    title: 'Крылья дракона',
+    category: 'Аксессуары',
+    rarity: 'Мифическое',
+    price: 799,
+    image: 'https://cdn.poehali.dev/projects/159c6133-3445-43e3-aeff-1bc353f2a632/files/29f4c6f1-3865-4a97-a9b3-7875ce059ce7.jpg',
+    badge: 'Редкое'
+  }
+];
+
+const robuxPackages = [
+  { id: 1, amount: 400, price: 199, bonus: 0, badge: '' },
+  { id: 2, amount: 800, price: 399, bonus: 50, badge: 'Популярный' },
+  { id: 3, amount: 1700, price: 799, bonus: 200, badge: 'Выгодно' },
+  { id: 4, amount: 4500, price: 1999, bonus: 500, badge: 'VIP' },
+  { id: 5, amount: 10000, price: 3999, bonus: 1500, badge: 'Mega' },
+  { id: 6, amount: 22500, price: 7999, bonus: 4000, badge: 'Premium' }
+];
+
 const reviews = [
   { id: 1, name: 'Максим К.', rating: 5, text: 'Отличный аккаунт! Всё как описано, передача прошла быстро' },
   { id: 2, name: 'Анна Л.', rating: 5, text: 'Супер! Куча редких предметов, очень довольна покупкой' },
@@ -84,11 +150,21 @@ const faqs = [
 
 export default function Index() {
   const [activeSection, setActiveSection] = useState('catalog');
+  const [catalogType, setCatalogType] = useState<'accounts' | 'items' | 'robux'>('accounts');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Все');
 
   const filteredAccounts = accounts.filter(acc =>
     acc.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const categories = ['Все', 'Оружие', 'Одежда', 'Аксессуары'];
+  
+  const filteredItems = items.filter(item => {
+    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'Все' || item.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1A1F2C] via-[#221F3B] to-[#1A1F2C]">
@@ -104,25 +180,36 @@ export default function Index() {
               </h1>
             </div>
             <nav className="hidden md:flex gap-6">
-              {['Каталог', 'Оплата и доставка', 'Отзывы', 'FAQ', 'Контакты'].map((item) => (
-                <button
-                  key={item}
-                  onClick={() => setActiveSection(item.toLowerCase().replace(/\s/g, ''))}
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
-                    activeSection === item.toLowerCase().replace(/\s/g, '')
-                      ? 'text-primary'
-                      : 'text-white/70'
-                  }`}
-                >
-                  {item}
-                </button>
-              ))}
+              {['Каталог', 'Предметы', 'Robux', 'Оплата и доставка', 'Отзывы', 'FAQ', 'Контакты'].map((item) => {
+                const sectionKey = item.toLowerCase().replace(/\s/g, '');
+                return (
+                  <button
+                    key={item}
+                    onClick={() => {
+                      setActiveSection(sectionKey);
+                      if (item === 'Каталог') setCatalogType('accounts');
+                      if (item === 'Предметы') { setActiveSection('catalog'); setCatalogType('items'); }
+                      if (item === 'Robux') { setActiveSection('catalog'); setCatalogType('robux'); }
+                    }}
+                    className={`text-sm font-medium transition-colors hover:text-primary ${
+                      (activeSection === sectionKey || 
+                       (activeSection === 'catalog' && ((item === 'Каталог' && catalogType === 'accounts') || 
+                       (item === 'Предметы' && catalogType === 'items') || 
+                       (item === 'Robux' && catalogType === 'robux'))))
+                        ? 'text-primary'
+                        : 'text-white/70'
+                    }`}
+                  >
+                    {item}
+                  </button>
+                );
+              })}
             </nav>
           </div>
         </div>
       </header>
 
-      {activeSection === 'catalog' && (
+      {activeSection === 'catalog' && catalogType === 'accounts' && (
         <section className="container mx-auto px-4 py-12">
           <div className="text-center mb-12 animate-fade-in">
             <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
@@ -192,6 +279,173 @@ export default function Index() {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </section>
+      )}
+
+      {activeSection === 'catalog' && catalogType === 'items' && (
+        <section className="container mx-auto px-4 py-12">
+          <div className="text-center mb-12 animate-fade-in">
+            <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+              Внутриигровые предметы
+            </h2>
+            <p className="text-white/70 text-lg max-w-2xl mx-auto">
+              Редкие скины, оружие и аксессуары для вашего персонажа
+            </p>
+          </div>
+
+          <div className="max-w-xl mx-auto mb-8">
+            <div className="relative mb-4">
+              <Icon name="Search" className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={20} />
+              <Input
+                placeholder="Поиск предметов..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+              />
+            </div>
+            <div className="flex gap-2 justify-center flex-wrap">
+              {categories.map((cat) => (
+                <Button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  variant={selectedCategory === cat ? 'default' : 'outline'}
+                  className={selectedCategory === cat 
+                    ? 'bg-gradient-to-r from-primary to-accent border-0' 
+                    : 'bg-white/5 border-white/10 text-white hover:bg-white/10'}
+                >
+                  {cat}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredItems.map((item, index) => (
+              <Card
+                key={item.id}
+                className="bg-gradient-to-br from-card/80 to-card/40 border-white/10 overflow-hidden group hover:border-primary/50 transition-all duration-300 hover:scale-[1.02] animate-scale-in"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="relative overflow-hidden">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  {item.badge && (
+                    <Badge className="absolute top-3 right-3 bg-gradient-to-r from-primary to-accent border-0">
+                      {item.badge}
+                    </Badge>
+                  )}
+                  <div className="absolute top-3 left-3">
+                    <Badge className="bg-black/50 backdrop-blur-sm border-white/20">
+                      {item.category}
+                    </Badge>
+                  </div>
+                </div>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold mb-2 text-white">{item.title}</h3>
+                  <div className="mb-4">
+                    <Badge 
+                      className={`${
+                        item.rarity === 'Мифическое' ? 'bg-gradient-to-r from-yellow-500 to-orange-500' :
+                        item.rarity === 'Легендарное' ? 'bg-gradient-to-r from-purple-500 to-pink-500' :
+                        item.rarity === 'Эпическое' ? 'bg-gradient-to-r from-purple-400 to-blue-400' :
+                        'bg-gradient-to-r from-blue-400 to-cyan-400'
+                      } border-0`}
+                    >
+                      {item.rarity}
+                    </Badge>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="text-3xl font-bold text-white">{item.price} ₽</div>
+                    <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/80 hover:to-accent/80 border-0">
+                      <Icon name="ShoppingCart" size={18} className="mr-2" />
+                      Купить
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {activeSection === 'catalog' && catalogType === 'robux' && (
+        <section className="container mx-auto px-4 py-12">
+          <div className="text-center mb-12 animate-fade-in">
+            <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+              Покупка Robux
+            </h2>
+            <p className="text-white/70 text-lg max-w-2xl mx-auto">
+              Внутриигровая валюта Roblox по выгодным ценам
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {robuxPackages.map((pkg, index) => (
+              <Card
+                key={pkg.id}
+                className="bg-gradient-to-br from-card/80 to-card/40 border-white/10 overflow-hidden hover:border-primary/50 transition-all duration-300 hover:scale-[1.02] animate-scale-in"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <CardContent className="p-8">
+                  {pkg.badge && (
+                    <Badge className="mb-4 bg-gradient-to-r from-primary to-accent border-0">
+                      {pkg.badge}
+                    </Badge>
+                  )}
+                  
+                  <div className="flex items-center justify-center mb-6">
+                    <img 
+                      src="https://cdn.poehali.dev/projects/159c6133-3445-43e3-aeff-1bc353f2a632/files/22b20c3c-33c4-4f46-a9f4-08e77b116875.jpg"
+                      alt="Robux"
+                      className="w-20 h-20 rounded-full"
+                    />
+                  </div>
+
+                  <div className="text-center mb-6">
+                    <div className="text-4xl font-bold text-primary mb-2">
+                      {pkg.amount.toLocaleString()}
+                      {pkg.bonus > 0 && (
+                        <span className="text-accent text-2xl ml-2">+{pkg.bonus}</span>
+                      )}
+                    </div>
+                    <div className="text-white/60 text-sm">Robux</div>
+                  </div>
+
+                  <div className="text-center mb-6">
+                    <div className="text-3xl font-bold text-white">{pkg.price} ₽</div>
+                  </div>
+
+                  <Button className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/80 hover:to-accent/80 border-0">
+                    <Icon name="Coins" size={18} className="mr-2" />
+                    Купить
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="mt-12 max-w-3xl mx-auto">
+            <Card className="bg-card/80 border-white/10">
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center shrink-0">
+                    <Icon name="Info" size={24} className="text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2 text-white">Как получить Robux?</h3>
+                    <p className="text-white/70">
+                      После оплаты Robux будут начислены на ваш аккаунт в течение 5-15 минут. 
+                      Для зачисления необходимо указать никнейм вашего Roblox аккаунта.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
       )}
